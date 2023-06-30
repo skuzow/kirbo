@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon --config nodemon.json src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "lint": "eslint . --ext .ts"
   },
   "repository": {
     "type": "git",
@@ -24,7 +26,11 @@
   "homepage": "https://github.com/skuzow/kirbo#readme",
   "devDependencies": {
     "@types/node": "^20.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "nodemon": "^2.0.22",
+    "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
