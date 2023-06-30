@@ -13,12 +13,11 @@ export function processEnv() {
   const isEnvGenerated: boolean = existsSync(envFile);
   if (!isEnvGenerated) generateEnv();
   env({ path: envFilePath });
-  console.log(process.env.TEST);
 }
 
 function generateEnv() {
   const envTemplatePath = resolve(path, 'src/config/.env');
   copyFileSync(envTemplatePath, envFilePath);
-  console.warn('Check generated env and fill with config');
+  console.log('Check generated env and fill with config');
   process.exit();
 }
