@@ -2,7 +2,8 @@
   "name": "kirbo",
   "version": "0.0.1",
   "description": "Own discord bot",
-  "main": "index.ts",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "scripts": {
     "start": "node .",
     "dev": "nodemon --config nodemon.json src/index.ts",
@@ -24,6 +25,9 @@
     "url": "https://github.com/skuzow/kirbo/issues"
   },
   "homepage": "https://github.com/skuzow/kirbo#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
   "devDependencies": {
     "@types/node": "^20.3.2",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
