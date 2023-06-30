@@ -1,4 +1,11 @@
-import { Client, Collection, REST, Routes } from 'discord.js';
+import {
+  ActivityType,
+  Client,
+  Collection,
+  PresenceUpdateStatus,
+  REST,
+  Routes
+} from 'discord.js';
 import { Command } from '../types/Command.js';
 import { config } from '../systems/config.js';
 import { readdirSync } from 'fs';
@@ -8,7 +15,18 @@ export default class extends Client {
   public commandsArray: Command['structure'][] = [];
 
   constructor() {
-    super({ intents: ['Guilds'] });
+    super({
+      intents: ['Guilds'],
+      presence: {
+        activities: [
+          {
+            name: 'Chonky Kirbo D:',
+            type: ActivityType.Playing
+          }
+        ],
+        status: PresenceUpdateStatus.Idle
+      }
+    });
   }
 
   public async start() {
