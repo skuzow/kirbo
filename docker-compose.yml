@@ -2,4 +2,4 @@ version: '3'
 services:
   discord-bot:
     build: .
-    restart: on-failure
+    restart: on-failure:3
