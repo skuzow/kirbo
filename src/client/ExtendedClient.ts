@@ -39,7 +39,7 @@ export default class extends Client {
     try {
       await this.login(config.CLIENT_TOKEN);
     } catch (e) {
-      console.error('Please provide a valid client token!');
+      console.error('Please provide a valid CLIENT_TOKEN!');
       process.exit();
     }
   }
@@ -86,7 +86,7 @@ export default class extends Client {
       });
       console.log('Finished loading app commands.');
     } catch (e) {
-      console.error('Please provide a valid client id!');
+      console.error('Please provide a valid CLIENT_ID!');
       process.exit();
     }
   }
