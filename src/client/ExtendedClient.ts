@@ -36,7 +36,12 @@ export default class extends Client {
   }
 
   private async _login() {
-    await this.login(config.CLIENT_TOKEN);
+    try {
+      await this.login(config.CLIENT_TOKEN);
+    } catch (e) {
+      console.error('Please provide a valid CLIENT_TOKEN!');
+      process.exit();
+    }
   }
 
   private async _loadModules() {
@@ -81,7 +86,8 @@ export default class extends Client {
       });
       console.log('Finished loading app commands.');
     } catch (e) {
-      console.error(e);
+      console.error('Please provide a valid CLIENT_ID!');
+      process.exit();
     }
   }
 

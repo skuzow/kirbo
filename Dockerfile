@@ -9,7 +9,8 @@ RUN npm i \
 FROM node:16-alpine
 WORKDIR /usr/kirbo
 COPY package.json ./
-COPY .env ./
 COPY --from=builder /usr/kirbo/dist ./dist
-RUN npm i --only=production
+COPY --from=builder /usr/kirbo/src/config/.env ./
+COPY .env* ./
+RUN npm i --omit=dev
 CMD ["npm", "start"]
