@@ -8,7 +8,12 @@ import {
 } from 'discord.js';
 import { Command } from '../types/Command.js';
 import { config } from '../systems/config.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { readdirSync } from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default class extends Client {
   public commands: Collection<string, Command> = new Collection();
@@ -50,10 +55,12 @@ export default class extends Client {
   }
 
   private async _loadCommands() {
-    const commandFolders: string[] = readdirSync('./dist/commands/');
+    const commandFolders: string[] = readdirSync(
+      path.join(__dirname, '../commands')
+    );
     for (const commandFolder of commandFolders) {
       const commandFiles: string[] = readdirSync(
-        `./dist/commands/${commandFolder}`
+        path.join(__dirname, `../commands/${commandFolder}`)
       );
       for (const commandFile of commandFiles) {
         const module: Command = (
@@ -67,9 +74,13 @@ export default class extends Client {
   }
 
   private async _loadEvents() {
-    const eventFolders: string[] = readdirSync('./dist/events/');
+    const eventFolders: string[] = readdirSync(
+      path.join(__dirname, '../events/')
+    );
     for (const eventFolder of eventFolders) {
-      const eventFiles: string[] = readdirSync(`./dist/events/${eventFolder}`);
+      const eventFiles: string[] = readdirSync(
+        path.join(__dirname, `../events/${eventFolder}`)
+      );
       for (const eventFile of eventFiles) {
         await import(`../events/${eventFolder}/${eventFile}`);
         console.log('Loaded new event: ' + eventFile);
