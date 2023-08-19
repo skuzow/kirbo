@@ -37,8 +37,7 @@ export default new client.command({
 
 async function getMeme(): Promise<Meme> {
   const meme: Meme = await axios('https://meme-api.com/gimme').then(function (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    response: AxiosResponse<any, any>
+    response: AxiosResponse
   ) {
     return response.data;
   });
