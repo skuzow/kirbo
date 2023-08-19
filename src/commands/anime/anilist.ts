@@ -12,12 +12,14 @@ const ANILIST_GRAPHQL_URL = 'https://graphql.anilist.co';
 export default new client.command({
   structure: new SlashCommandBuilder()
     .setName('anilist')
-    .setDescription('Replies with a random meme')
+    .setDescription(
+      'Links anilist username with discord account to receive anime notifications'
+    )
     .addStringOption((option) =>
       option
         .setRequired(true)
         .setName('username')
-        .setDescription('Links anilist username with discord account')
+        .setDescription('Anilist username to link')
     )
     .addBooleanOption((option) =>
       option
