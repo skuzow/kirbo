@@ -8,18 +8,7 @@ import {
   EmbedBuilder,
   SlashCommandBuilder
 } from 'discord.js';
-
-export interface Meme {
-  postLink: string;
-  subreddit: string;
-  title: string;
-  url: string;
-  nsfw: boolean;
-  spoiler: boolean;
-  author: string;
-  ups: number;
-  preview: string[];
-}
+import { Meme } from '../../types/Meme.js';
 
 export default new client.command({
   structure: new SlashCommandBuilder()
@@ -44,7 +33,7 @@ async function getMeme(): Promise<Meme> {
   return meme;
 }
 
-function generateMemeEmbed(meme: Meme) {
+function generateMemeEmbed(meme: Meme): EmbedBuilder {
   return new EmbedBuilder()
     .setColor(Colors.LuminousVividPink)
     .setTitle(meme.title)
