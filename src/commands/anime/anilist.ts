@@ -7,7 +7,7 @@ import {
 } from 'discord.js';
 import ExtendedClient from '../../client/ExtendedClient.js';
 import { client } from '../../index.js';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import {
   Anilist,
   AnimeEntry,
@@ -40,7 +40,7 @@ export default new client.command({
   ) => {
     const username = String(getInteractionOptionValue(interaction, 'username'));
     const active = Boolean(getInteractionOptionValue(interaction, 'active'));
-    return processQuery(interaction, username, active);
+    processQuery(interaction, username, active);
   }
 });
 
@@ -59,19 +59,18 @@ async function processQuery(
   try {
     const response: Anilist = await requestQuery(username);
     const infoEmbed: EmbedBuilder = generateInfoEmbed(response);
-    return await interaction.reply({ embeds: [infoEmbed] });
+    await interaction.reply({ embeds: [infoEmbed] });
   } catch {
-    return await interaction.reply('Invalid username');
+    await interaction.reply('Invalid username');
   }
 }
 
 async function requestQuery(username: string): Promise<Anilist> {
-  const response = await axios({
+  return axios({
     url: ANILIST_GRAPHQL_URL,
     method: 'post',
     data: { query: generateQuery(username) }
-  });
-  return response.data.data.MediaListCollection;
+  }).then((response: AxiosResponse) => response.data.data.MediaListCollection);
 }
 
 function generateInfoEmbed(response: Anilist): EmbedBuilder {
