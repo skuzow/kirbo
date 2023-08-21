@@ -103,13 +103,34 @@ function filterAiringAnimes(animes: AnimeEntry[]): AnimeField[] {
 
 function generateAnimeValue(anime: AnimeNextAiringEpisode | null): string {
   if (anime === null) return 'No airing episodes';
-  return (
-    'Episode ' +
-    anime.episode +
-    ' will air in ' +
-    Math.floor(anime.timeUntilAiring / 60) +
-    ' hours'
+  const { days, hours, remainingMinutes } = convertSecondsToDaysHoursMinutes(
+    anime.timeUntilAiring
   );
+  return `Episode ${anime.episode} will air in ${days} days, ${hours} hours, and ${remainingMinutes} minutes`;
+}
+
+function convertSecondsToDaysHoursMinutes(seconds: number): {
+  days: number;
+  hours: number;
+  remainingMinutes: number;
+} {
+  const minutes: number = seconds / 60;
+  const minutesInDay: number = 60 * 24;
+  const minutesInHour = 60;
+
+  const days: number = Math.floor(minutes / minutesInDay);
+  const remainingMinutesAfterDays: number = minutes % minutesInDay;
+
+  const hours: number = Math.floor(remainingMinutesAfterDays / minutesInHour);
+  const remainingMinutes: number = Math.floor(
+    remainingMinutesAfterDays % minutesInHour
+  );
+
+  return {
+    days,
+    hours,
+    remainingMinutes
+  };
 }
 
 function generateQuery(username: string): string {
