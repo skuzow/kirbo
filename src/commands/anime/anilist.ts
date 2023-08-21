@@ -66,11 +66,9 @@ async function processQuery(
 }
 
 async function requestQuery(username: string): Promise<Anilist> {
-  return axios({
-    url: ANILIST_GRAPHQL_URL,
-    method: 'post',
-    data: { query: generateQuery(username) }
-  }).then((response: AxiosResponse) => response.data.data.MediaListCollection);
+  return axios
+    .post(ANILIST_GRAPHQL_URL, { query: generateQuery(username) })
+    .then((response: AxiosResponse) => response.data.data.MediaListCollection);
 }
 
 function generateInfoEmbed(response: Anilist): EmbedBuilder {
