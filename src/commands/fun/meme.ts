@@ -18,19 +18,20 @@ export default new client.command({
     client: ExtendedClient,
     interaction: ChatInputCommandInteraction<CacheType>
   ) => {
-    const meme: Meme = await getMeme();
-    const memeEmbed: EmbedBuilder = generateMemeEmbed(meme);
-    await interaction.reply({ embeds: [memeEmbed] });
+    try {
+      const meme: Meme = await getMeme();
+      const memeEmbed: EmbedBuilder = generateMemeEmbed(meme);
+      await interaction.reply({ embeds: [memeEmbed] });
+    } catch {
+      await interaction.reply('There was an error getting the meme');
+    }
   }
 });
 
 async function getMeme(): Promise<Meme> {
-  const meme: Meme = await axios('https://meme-api.com/gimme').then(function (
-    response: AxiosResponse
-  ) {
-    return response.data;
-  });
-  return meme;
+  return axios('https://meme-api.com/gimme').then(
+    (response: AxiosResponse) => response.data
+  );
 }
 
 function generateMemeEmbed(meme: Meme): EmbedBuilder {
