@@ -6,10 +6,10 @@ export interface Anilist {
 export interface AnilistUser {
   id: number;
   name: string;
-  avatar: Avatar;
+  avatar: AnilistAvatar;
 }
 
-export interface Avatar {
+export interface AnilistAvatar {
   medium: string;
 }
 
@@ -25,7 +25,7 @@ export interface AnimeMedia {
   id: number;
   title: AnimeTitle;
   siteUrl: string;
-  coverImage: Avatar;
+  coverImage: AnilistAvatar;
   nextAiringEpisode: NextAiringEpisode | null;
 }
 
