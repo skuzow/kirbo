@@ -8,7 +8,11 @@ import {
 import ExtendedClient from '../../client/ExtendedClient.js';
 import { client } from '../../index.js';
 import axios from 'axios';
-import { Anilist, AnimeEntry, NextAiringEpisode } from '../../types/Anilist.js';
+import {
+  Anilist,
+  AnimeEntry,
+  AnimeNextAiringEpisode
+} from '../../types/Anilist.js';
 
 const ANILIST_GRAPHQL_URL = 'https://graphql.anilist.co';
 
@@ -100,7 +104,7 @@ function filterAiringAnimes(animes: AnimeEntry[]): AnimeField[] {
     });
 }
 
-function generateAnimeValue(anime: NextAiringEpisode | null): string {
+function generateAnimeValue(anime: AnimeNextAiringEpisode | null): string {
   if (anime === null) return 'No airing episodes';
   return (
     'Episode ' +

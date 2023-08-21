@@ -26,14 +26,14 @@ export interface AnimeMedia {
   title: AnimeTitle;
   siteUrl: string;
   coverImage: AnilistAvatar;
-  nextAiringEpisode: NextAiringEpisode | null;
+  nextAiringEpisode: AnimeNextAiringEpisode | null;
 }
 
 export interface AnimeTitle {
   english: string;
 }
 
-export interface NextAiringEpisode {
+export interface AnimeNextAiringEpisode {
   id: number;
   airingAt: number;
   timeUntilAiring: number;
