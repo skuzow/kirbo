@@ -19,44 +19,44 @@ const ANILIST_GRAPHQL_URL = 'https://graphql.anilist.co';
 export default new client.command({
   structure: new SlashCommandBuilder()
     .setName('anilist')
-    .setDescription(
-      'Links anilist username with discord account to receive anime notifications'
+    .setDescription('Anilist notification commands')
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('link')
+        .setDescription('Links anilist username with discord account')
+        .addStringOption((option) =>
+          option
+            .setRequired(true)
+            .setName('username')
+            .setDescription('Anilist username to link')
+        )
     )
-    .addStringOption((option) =>
-      option
-        .setRequired(true)
-        .setName('username')
-        .setDescription('Anilist username to link')
-    )
-    .addBooleanOption((option) =>
-      option
-        .setRequired(true)
-        .setName('active')
-        .setDescription('Enables or disables anime notifications')
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('unlink')
+        .setDescription('Unlinks anilist username with discord account')
     ),
   run: async (
     client: ExtendedClient,
     interaction: ChatInputCommandInteraction<CacheType>
   ) => {
-    const username = String(getInteractionOptionValue(interaction, 'username'));
-    const active = Boolean(getInteractionOptionValue(interaction, 'active'));
-    processQuery(interaction, username, active);
+    const subCommand: string = interaction.options.getSubcommand();
+    if (subCommand === 'link') {
+      const username = String(interaction.options.get('username')?.value);
+      processLinkQuery(interaction, username);
+    } else if (subCommand === 'unlink') {
+      // TODO: Implement unlinking
+      await interaction.reply('Unlinking anilist account');
+    }
   }
 });
 
-function getInteractionOptionValue(
+async function processLinkQuery(
   interaction: ChatInputCommandInteraction<CacheType>,
-  optionName: string
-): string | number | boolean | undefined {
-  return interaction.options.get(optionName)?.value;
-}
-
-async function processQuery(
-  interaction: ChatInputCommandInteraction<CacheType>,
-  username: string,
-  active: boolean
+  username: string
 ) {
   try {
+    // TODO: Implement linking
     const response: Anilist = await requestQuery(username);
     const infoEmbed: EmbedBuilder = generateInfoEmbed(response);
     await interaction.reply({ embeds: [infoEmbed] });
