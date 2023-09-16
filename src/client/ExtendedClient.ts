@@ -35,12 +35,12 @@ export default class extends Client {
   }
 
   public async start() {
-    this._login();
-    await this._loadModules();
-    this._deploy();
+    this.loginDiscord();
+    await this.loadModules();
+    this.deploy();
   }
 
-  private async _login() {
+  private async loginDiscord() {
     try {
       await this.login(config.CLIENT_TOKEN);
     } catch (e) {
@@ -49,12 +49,12 @@ export default class extends Client {
     }
   }
 
-  private async _loadModules() {
-    await this._loadCommands();
-    await this._loadEvents();
+  private async loadModules() {
+    await this.searchCommands();
+    await this.searchEvents();
   }
 
-  private async _loadCommands() {
+  private async searchCommands() {
     const commandFolders: string[] = readdirSync(
       path.join(__dirname, '../commands')
     );
@@ -63,17 +63,22 @@ export default class extends Client {
         path.join(__dirname, `../commands/${commandFolder}`)
       );
       for (const commandFile of commandFiles) {
-        const module: Command = (
-          await import(`../commands/${commandFolder}/${commandFile}`)
-        ).default;
-        this.commands.set(module.structure.name, module);
-        this.commandsArray.push(module.structure);
-        console.log('Loaded new command: ' + commandFile);
+        await this.loadCommand(commandFolder, commandFile);
       }
     }
   }
 
-  private async _loadEvents() {
+  private async loadCommand(commandFolder: string, commandFile: string) {
+    if (commandFile.startsWith('_')) return;
+    const module: Command = (
+      await import(`../commands/${commandFolder}/${commandFile}`)
+    ).default;
+    this.commands.set(module.structure.name, module);
+    this.commandsArray.push(module.structure);
+    console.log('Loaded new command: ' + commandFile);
+  }
+
+  private async searchEvents() {
     const eventFolders: string[] = readdirSync(
       path.join(__dirname, '../events/')
     );
@@ -82,13 +87,17 @@ export default class extends Client {
         path.join(__dirname, `../events/${eventFolder}`)
       );
       for (const eventFile of eventFiles) {
-        await import(`../events/${eventFolder}/${eventFile}`);
-        console.log('Loaded new event: ' + eventFile);
+        await this.loadEvent(eventFolder, eventFile);
       }
     }
   }
 
-  private async _deploy() {
+  private async loadEvent(eventFolder: string, eventFile: string) {
+    await import(`../events/${eventFolder}/${eventFile}`);
+    console.log('Loaded new event: ' + eventFile);
+  }
+
+  private async deploy() {
     const rest: REST = new REST().setToken(config.CLIENT_TOKEN ?? '');
     try {
       console.log('Started loading app commands...');
@@ -105,7 +114,6 @@ export default class extends Client {
   public command = class {
     public structure: Command['structure'];
     public run: Command['run'];
-
     constructor(data: Command) {
       this.structure = data.structure;
       this.run = data.run;
