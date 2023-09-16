@@ -11,6 +11,7 @@ import {
   AnimeEntry,
   AnimeNextAiringEpisode
 } from '../../types/Anilist.js';
+import prettyMilliseconds from 'pretty-ms';
 
 const ANILIST_GRAPHQL_URL = 'https://graphql.anilist.co';
 
@@ -37,8 +38,8 @@ async function requestQuery(username: string): Promise<Anilist> {
 function generateInfoEmbed(response: Anilist): EmbedBuilder {
   return new EmbedBuilder()
     .setColor(Colors.LuminousVividPink)
-    .setTitle('Successfully linked ' + response.user.name + ' Anime List')
-    .setDescription('Current airing animes')
+    .setTitle(`Successfully linked ${response.user.name} Anilist`)
+    .setDescription('Current airing animes on linked account')
     .setThumbnail(response.user.avatar.medium)
     .setFields(filterAiringAnimes(response.lists[0].entries))
     .setTimestamp()
@@ -66,34 +67,10 @@ function filterAiringAnimes(animes: AnimeEntry[]): AnimeField[] {
 
 function generateAnimeValue(anime: AnimeNextAiringEpisode | null): string {
   if (anime === null) return 'No airing episodes';
-  const { days, hours, remainingMinutes } = convertSecondsToDaysHoursMinutes(
-    anime.timeUntilAiring
+  const airingHumanReadable: string = prettyMilliseconds(
+    anime.timeUntilAiring * 1000
   );
-  return `Episode ${anime.episode} will air in ${days} days, ${hours} hours, and ${remainingMinutes} minutes`;
-}
-
-function convertSecondsToDaysHoursMinutes(seconds: number): {
-  days: number;
-  hours: number;
-  remainingMinutes: number;
-} {
-  const minutes: number = seconds / 60;
-  const minutesInDay: number = 60 * 24;
-  const minutesInHour = 60;
-
-  const days: number = Math.floor(minutes / minutesInDay);
-  const remainingMinutesAfterDays: number = minutes % minutesInDay;
-
-  const hours: number = Math.floor(remainingMinutesAfterDays / minutesInHour);
-  const remainingMinutes: number = Math.floor(
-    remainingMinutesAfterDays % minutesInHour
-  );
-
-  return {
-    days,
-    hours,
-    remainingMinutes
-  };
+  return `Episode ${anime.episode} will air in ${airingHumanReadable}`;
 }
 
 function generateQuery(username: string): string {

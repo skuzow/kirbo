@@ -28,7 +28,8 @@
   "dependencies": {
     "axios": "^1.4.0",
     "discord.js": "^14.11.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "pretty-ms": "^8.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.3.2",
