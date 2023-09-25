@@ -7,6 +7,7 @@ import ExtendedClient from '../../client/ExtendedClient.js';
 import { client } from '../../index.js';
 import { processLinkQuery } from './_anilistLink.js';
 import { processUnlinkQuery } from './_anilistUnlink.js';
+import { processInfoQuery } from './_anilistInfo.js';
 
 export default new client.command({
   structure: new SlashCommandBuilder()
@@ -27,6 +28,11 @@ export default new client.command({
       subcommand
         .setName('unlink')
         .setDescription('Unlinks anilist username with discord account')
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('info')
+        .setDescription('Provides linked anilist account airing animes info')
     ),
   run: async (
     client: ExtendedClient,
@@ -38,4 +44,5 @@ function processCommand(interaction: ChatInputCommandInteraction<CacheType>) {
   const subCommand: string = interaction.options.getSubcommand();
   if (subCommand === 'link') processLinkQuery(interaction);
   else if (subCommand === 'unlink') processUnlinkQuery(interaction);
+  else if (subCommand === 'info') processInfoQuery(interaction);
 }

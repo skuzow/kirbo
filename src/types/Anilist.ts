@@ -4,7 +4,6 @@ export interface Anilist {
 }
 
 export interface AnilistUser {
-  id: number;
   name: string;
   avatar: AnilistAvatar;
 }

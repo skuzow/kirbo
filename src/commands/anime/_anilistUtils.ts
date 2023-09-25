@@ -5,6 +5,8 @@ import {
   AnimeEntry,
   AnimeNextAiringEpisode
 } from '../../types/Anilist.js';
+import { Colors, EmbedBuilder } from 'discord.js';
+import { client } from '../../index.js';
 
 const ANILIST_GRAPHQL_URL = 'https://graphql.anilist.co';
 
@@ -24,7 +26,6 @@ function generateAnilistParams(username: string): string {
             forceSingleCompletedList: true
         ) {
             user {
-                id
                 name
                 avatar {
                     medium
@@ -54,7 +55,25 @@ interface AiringAnimeEmbedField {
   value: string;
 }
 
-export function generateEmbedAiringAnimes(
+export function generateInfoEmbed(
+  response: Anilist,
+  titleMessage: string
+): EmbedBuilder {
+  return new EmbedBuilder()
+    .setColor(Colors.LuminousVividPink)
+    .setTitle(titleMessage)
+    .setURL(`https://anilist.co/user/${response.user.name}`)
+    .setDescription('Current airing animes on linked account')
+    .setThumbnail(response.user.avatar.medium)
+    .setFields(generateEmbedAiringAnimes(response.lists[0].entries))
+    .setTimestamp()
+    .setFooter({
+      text: `Profile: ${response.user.name}`,
+      iconURL: client.user?.avatarURL() || undefined
+    });
+}
+
+function generateEmbedAiringAnimes(
   animes: AnimeEntry[]
 ): AiringAnimeEmbedField[] {
   return filterAiringAnimes(animes).map((anime) => {
