@@ -5,9 +5,9 @@ import {
   PresenceUpdateStatus
 } from 'discord.js';
 import { Command } from '../types/Command.js';
-import { config } from '../systems/config.js';
-import { handleCommands } from '../systems/command.js';
-import { handleEvents } from '../systems/event.js';
+import { config } from '../systems/configSystem.js';
+import { handleCommands } from '../systems/commandHandler.js';
+import { handleEvents } from '../systems/eventHandler.js';
 
 export default class extends Client {
   public commands: Collection<string, Command> = new Collection();

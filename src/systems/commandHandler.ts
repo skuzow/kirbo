@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import { config } from './config.js';
+import { config } from './configSystem.js';
 import { readdirSync } from 'fs';
 import path from 'path';
 import { Command } from '../types/Command.js';
