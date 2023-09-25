@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import { HydratedDocument } from 'mongoose';
 import {
   ChatInputCommandInteraction,
   CacheType,
@@ -6,33 +6,42 @@ import {
   Colors
 } from 'discord.js';
 import { client } from '../../index.js';
+import { Anilist, AnimeEntry } from '../../types/Anilist.js';
+import { IUser } from '../../models/User.js';
 import {
-  Anilist,
-  AnimeEntry,
-  AnimeNextAiringEpisode
-} from '../../types/Anilist.js';
-import prettyMilliseconds from 'pretty-ms';
-
-const ANILIST_GRAPHQL_URL = 'https://graphql.anilist.co';
+  filterAiringAnimes,
+  generateEmbedAiringAnimes,
+  requestAnilistQuery
+} from './_anilistUtils.js';
+import { insertUserAiringAnimesData } from '../../services/airingAnimeService.js';
+import { getOrCreateUser } from '../../services/userService.js';
 
 export async function processLinkQuery(
   interaction: ChatInputCommandInteraction<CacheType>
 ) {
   try {
     const username = String(interaction.options.get('username')?.value);
-    // TODO: Implement linking
-    const response: Anilist = await requestQuery(username);
+    const response: Anilist = await requestAnilistQuery(username);
+    const discordId: string = interaction.user.id;
+    await insertUserData(response, discordId);
     const infoEmbed: EmbedBuilder = generateInfoEmbed(response);
     await interaction.reply({ embeds: [infoEmbed] });
-  } catch {
+  } catch (e) {
+    console.error(e);
     await interaction.reply(`Username doesn't exist in Anilist`);
   }
 }
 
-async function requestQuery(username: string): Promise<Anilist> {
-  return axios
-    .post(ANILIST_GRAPHQL_URL, { query: generateQuery(username) })
-    .then((response: AxiosResponse) => response.data.data.MediaListCollection);
+async function insertUserData(response: Anilist, discordId: string) {
+  const user: HydratedDocument<IUser> | null = await getOrCreateUser(
+    discordId,
+    response.user.name
+  );
+  if (!user) return;
+  const airingAnimes: AnimeEntry[] = filterAiringAnimes(
+    response.lists[0].entries
+  );
+  await insertUserAiringAnimesData(user, airingAnimes);
 }
 
 function generateInfoEmbed(response: Anilist): EmbedBuilder {
@@ -41,76 +50,10 @@ function generateInfoEmbed(response: Anilist): EmbedBuilder {
     .setTitle(`Successfully linked ${response.user.name} Anilist`)
     .setDescription('Current airing animes on linked account')
     .setThumbnail(response.user.avatar.medium)
-    .setFields(filterAiringAnimes(response.lists[0].entries))
+    .setFields(generateEmbedAiringAnimes(response.lists[0].entries))
     .setTimestamp()
     .setFooter({
-      text: 'Profile: ' + response.user.name,
+      text: `Profile: ${response.user.name}`,
       iconURL: client.user?.avatarURL() || undefined
     });
-}
-
-interface AnimeField {
-  name: string;
-  value: string;
-}
-
-function filterAiringAnimes(animes: AnimeEntry[]): AnimeField[] {
-  return animes
-    .filter((anime) => anime.media.nextAiringEpisode !== null)
-    .map((anime) => {
-      return {
-        name: anime.media.title.english,
-        value: generateAnimeValue(anime.media.nextAiringEpisode)
-      };
-    });
-}
-
-function generateAnimeValue(anime: AnimeNextAiringEpisode | null): string {
-  if (anime === null) return 'No airing episodes';
-  const airingHumanReadable: string = prettyMilliseconds(
-    anime.timeUntilAiring * 1000
-  );
-  return `Episode ${anime.episode} will air in ${airingHumanReadable}`;
-}
-
-function generateQuery(username: string): string {
-  return `
-    query MediaListCollection {
-        MediaListCollection(
-            userName: "${username}"
-            type: ANIME
-            status: CURRENT
-            forceSingleCompletedList: true
-        ) {
-            user {
-                id
-                name
-                avatar {
-                    medium
-                }
-            }
-            lists {
-                entries {
-                    media {
-                        title {
-                            english
-                        }
-                        id
-                        siteUrl
-                        coverImage {
-                            medium
-                        }
-                        nextAiringEpisode {
-                            id
-                            airingAt
-                            timeUntilAiring
-                            episode
-                            mediaId
-                        }
-                    }
-                }
-            }
-        }
-    }
-  `;
 }

@@ -22,10 +22,7 @@ export interface AnimeEntry {
 }
 
 export interface AnimeMedia {
-  id: number;
   title: AnimeTitle;
-  siteUrl: string;
-  coverImage: AnilistAvatar;
   nextAiringEpisode: AnimeNextAiringEpisode | null;
 }
 
@@ -34,9 +31,7 @@ export interface AnimeTitle {
 }
 
 export interface AnimeNextAiringEpisode {
-  id: number;
   airingAt: number;
   timeUntilAiring: number;
   episode: number;
-  mediaId: number;
 }
