@@ -8,18 +8,7 @@ import {
   EmbedBuilder,
   SlashCommandBuilder
 } from 'discord.js';
-
-export interface Meme {
-  postLink: string;
-  subreddit: string;
-  title: string;
-  url: string;
-  nsfw: boolean;
-  spoiler: boolean;
-  author: string;
-  ups: number;
-  preview: string[];
-}
+import { Meme } from '../../types/Meme.js';
 
 export default new client.command({
   structure: new SlashCommandBuilder()
@@ -29,23 +18,23 @@ export default new client.command({
     client: ExtendedClient,
     interaction: ChatInputCommandInteraction<CacheType>
   ) => {
-    const meme: Meme = await getMeme();
-    const memeEmbed: EmbedBuilder = generateMemeEmbed(meme);
-    await interaction.reply({ embeds: [memeEmbed] });
+    try {
+      const meme: Meme = await getMeme();
+      const memeEmbed: EmbedBuilder = generateMemeEmbed(meme);
+      await interaction.reply({ embeds: [memeEmbed] });
+    } catch {
+      await interaction.reply('There was an error getting the meme');
+    }
   }
 });
 
 async function getMeme(): Promise<Meme> {
-  const meme: Meme = await axios('https://meme-api.com/gimme').then(function (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    response: AxiosResponse<any, any>
-  ) {
-    return response.data;
-  });
-  return meme;
+  return axios('https://meme-api.com/gimme').then(
+    (response: AxiosResponse) => response.data
+  );
 }
 
-function generateMemeEmbed(meme: Meme) {
+function generateMemeEmbed(meme: Meme): EmbedBuilder {
   return new EmbedBuilder()
     .setColor(Colors.LuminousVividPink)
     .setTitle(meme.title)

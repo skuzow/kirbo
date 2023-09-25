@@ -16,8 +16,8 @@ export function processEnv() {
 }
 
 function generateEnv() {
-  const envTemplatePath = resolve(path, 'src/config/.env');
+  const envTemplatePath = resolve(path, 'src/config/.template.env');
   copyFileSync(envTemplatePath, envFilePath);
-  console.log('Check generated env and fill with config');
+  console.log('Check generated env and fill it with config');
   process.exit();
 }
